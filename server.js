@@ -44,3 +44,10 @@ app.get("/search", async (req, res) => {
 });
 
 app.listen(3000, () => console.log("Server running"));
+
+const path = require("path");
+
+// Homepage route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
