@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+</head>
+<body>
+
+<h2>Add Movie</h2>
+
+<input id="title" placeholder="Title"><br><br>
+<input id="poster" placeholder="Poster URL"><br><br>
+<input id="date" placeholder="Release Date"><br><br>
+
+<button onclick="addMovie()">Add</button>
+
+<script>
+const API = "https://your-vercel-url";
+
+async function addMovie() {
+  const title = document.getElementById("title").value;
+  const poster = document.getElementById("poster").value;
+  const releaseDate = document.getElementById("date").value;
+
+  await fetch(API + "/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, poster, releaseDate })
+  });
+
+  alert("Movie Added!");
+}
+</script>
+
+</body>
+</html>
