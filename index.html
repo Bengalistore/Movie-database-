@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Movie Site</title>
+  <style>
+    body { background:#111; color:#fff; font-family:sans-serif; }
+    .grid { display:flex; flex-wrap:wrap; gap:10px; }
+    .card { width:150px; }
+    img { width:100%; border-radius:10px; }
+    input { padding:10px; width:200px; }
+  </style>
+</head>
+<body>
+
+<h1>🎬 Movie Site</h1>
+
+<input id="search" placeholder="Search..." onkeyup="searchMovie()" />
+
+<div class="grid" id="movies"></div>
+
+<script>
+const API = "YOUR_BACKEND_URL";
+
+// Load Movies
+async function loadMovies() {
+  const res = await fetch(API + "/movies");
+  const data = await res.json();
+
+  document.getElementById("movies").innerHTML =
+    data.map(m => `
+      <div class="card">
+        <img src="${m.poster}" />
+        <h4>${m.title}</h4>
+        <p>${m.releaseDate}</p>
+      </div>
+    `).join("");
+}
+
+// Search
+async function searchMovie() {
+  const q = document.getElementById("search").value;
+  const res = await fetch(API + "/search?q=" + q);
+  const data = await res.json();
+
+  document.getElementById("movies").innerHTML =
+    data.map(m => `
+      <div class="card">
+        <img src="${m.poster}" />
+        <h4>${m.title}</h4>
+      </div>
+    `).join("");
+}
+
+loadMovies();
+</script>
+
+</body>
+</html>
