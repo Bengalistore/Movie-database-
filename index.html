@@ -1,54 +1,161 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Movie Site</title>
+
 <style>
-body { background:#111; color:#fff; font-family:sans-serif; }
-.grid { display:flex; flex-wrap:wrap; gap:10px; }
-.card { width:150px; cursor:pointer; }
-img { width:100%; border-radius:10px; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
+
+body{
+  background:linear-gradient(135deg,#0f0f0f,#1a1a2e);
+  color:#fff;
+}
+
+/* Navbar */
+.nav{
+  display:flex;
+  justify-content:space-between;
+  padding:15px;
+  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,0.05);
+  position:sticky;
+  top:0;
+}
+
+input{
+  padding:10px;
+  border:none;
+  border-radius:20px;
+  outline:none;
+}
+
+/* Section */
+.section{
+  padding:15px;
+}
+
+.title{
+  margin-bottom:10px;
+  font-size:18px;
+}
+
+/* Slider */
+.slider{
+  display:flex;
+  overflow-x:auto;
+  gap:10px;
+}
+
+.slider::-webkit-scrollbar{display:none;}
+
+.card{
+  min-width:140px;
+  background:rgba(255,255,255,0.08);
+  border-radius:15px;
+  padding:10px;
+  backdrop-filter:blur(10px);
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.card:hover{
+  transform:scale(1.05);
+}
+
+.card img{
+  width:100%;
+  border-radius:10px;
+}
+
+/* Grid */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+@media(min-width:600px){
+  .grid{
+    grid-template-columns:repeat(4,1fr);
+  }
+}
 </style>
 </head>
 
 <body>
 
-<h1>🔥 Trending</h1>
-<div class="grid" id="trending"></div>
+<!-- Navbar -->
+<div class="nav">
+  <h2>🎬 Movie</h2>
+  <input id="search" placeholder="Search..." onkeyup="searchMovie()">
+</div>
 
-<h1>🎬 All Movies</h1>
-<div class="grid" id="movies"></div>
+<!-- Trending Slider -->
+<div class="section">
+  <h3 class="title">🔥 Trending</h3>
+  <div class="slider" id="trending"></div>
+</div>
+
+<!-- Movies Grid -->
+<div class="section">
+  <h3 class="title">🎞️ Movies</h3>
+  <div class="grid" id="movies"></div>
+</div>
 
 <script>
 const API = "https://movie-database-chi.vercel.app";
 
 // Trending
-async function loadTrending() {
+async function loadTrending(){
   const res = await fetch(API + "/trending");
   const data = await res.json();
 
-  document.getElementById("trending").innerHTML =
-    data.map(m => `
-      <div class="card" onclick="openMovie('${m._id}')">
-        <img src="${m.poster}">
-        <h4>${m.title}</h4>
-      </div>
-    `).join("");
+  trending.innerHTML = data.map(m=>`
+    <div class="card" onclick="openMovie('${m._id}')">
+      <img src="${m.poster}">
+      <p>${m.title}</p>
+    </div>
+  `).join("");
 }
 
-// All Movies
-async function loadMovies() {
+// Movies
+async function loadMovies(){
   const res = await fetch(API + "/movies");
   const data = await res.json();
 
-  document.getElementById("movies").innerHTML =
-    data.map(m => `
-      <div class="card" onclick="openMovie('${m._id}')">
-        <img src="${m.poster}">
-        <h4>${m.title}</h4>
-      </div>
-    `).join("");
+  movies.innerHTML = data.map(m=>`
+    <div class="card" onclick="openMovie('${m._id}')">
+      <img src="${m.poster}">
+      <p>${m.title}</p>
+      <small>${m.releaseDate}</small>
+    </div>
+  `).join("");
 }
 
-function openMovie(id) {
+// Search
+async function searchMovie(){
+  const q = document.getElementById("search").value;
+
+  if(!q){
+    loadMovies();
+    return;
+  }
+
+  const res = await fetch(API + "/search?q=" + q);
+  const data = await res.json();
+
+  movies.innerHTML = data.map(m=>`
+    <div class="card" onclick="openMovie('${m._id}')">
+      <img src="${m.poster}">
+      <p>${m.title}</p>
+    </div>
+  `).join("");
+}
+
+// Open movie
+function openMovie(id){
   window.location.href = "/movie/" + id;
 }
 
