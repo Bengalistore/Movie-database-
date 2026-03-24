@@ -1,34 +1,55 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Admin Panel</title>
-</head>
 <body>
 
 <h2>Add Movie</h2>
 
-<input id="title" placeholder="Title"><br><br>
-<input id="poster" placeholder="Poster URL"><br><br>
-<input id="date" placeholder="Release Date"><br><br>
+<input id="title" placeholder="Title"><br>
+<input id="poster" placeholder="Poster"><br>
+<input id="date" placeholder="Date"><br>
 
 <button onclick="addMovie()">Add</button>
 
+<h2>All Movies</h2>
+<div id="list"></div>
+
 <script>
-const API = "https://movie-database-chi.vercel.app/";
+const API = "https://movie-database-chi.vercel.app";
 
+// Add
 async function addMovie() {
-  const title = document.getElementById("title").value;
-  const poster = document.getElementById("poster").value;
-  const releaseDate = document.getElementById("date").value;
-
   await fetch(API + "/add", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, poster, releaseDate })
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      title: title.value,
+      poster: poster.value,
+      releaseDate: date.value
+    })
   });
-
-  alert("Movie Added!");
+  load();
 }
+
+// Load
+async function load() {
+  const res = await fetch(API + "/movies");
+  const data = await res.json();
+
+  list.innerHTML = data.map(m => `
+    <div>
+      ${m.title}
+      <button onclick="del('${m._id}')">Delete</button>
+    </div>
+  `).join("");
+}
+
+// Delete
+async function del(id) {
+  await fetch(API + "/delete/" + id, { method: "DELETE" });
+  load();
+}
+
+load();
 </script>
 
 </body>
