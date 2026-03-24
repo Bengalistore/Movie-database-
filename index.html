@@ -1,56 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Movie Site</title>
-  <style>
-    body { background:#111; color:#fff; font-family:sans-serif; }
-    .grid { display:flex; flex-wrap:wrap; gap:10px; }
-    .card { width:150px; }
-    img { width:100%; border-radius:10px; }
-    input { padding:10px; width:200px; }
-  </style>
+<style>
+body { background:#111; color:#fff; font-family:sans-serif; }
+.grid { display:flex; flex-wrap:wrap; gap:10px; }
+.card { width:150px; cursor:pointer; }
+img { width:100%; border-radius:10px; }
+</style>
 </head>
+
 <body>
 
-<h1>🎬 Movie Site</h1>
+<h1>🔥 Trending</h1>
+<div class="grid" id="trending"></div>
 
-<input id="search" placeholder="Search..." onkeyup="searchMovie()" />
-
+<h1>🎬 All Movies</h1>
 <div class="grid" id="movies"></div>
 
 <script>
-const API = "https://movie-database-chi.vercel.app";
+const API = "https://your-vercel-url";
 
-// Load Movies
+// Trending
+async function loadTrending() {
+  const res = await fetch(API + "/trending");
+  const data = await res.json();
+
+  document.getElementById("trending").innerHTML =
+    data.map(m => `
+      <div class="card" onclick="openMovie('${m._id}')">
+        <img src="${m.poster}">
+        <h4>${m.title}</h4>
+      </div>
+    `).join("");
+}
+
+// All Movies
 async function loadMovies() {
   const res = await fetch(API + "/movies");
   const data = await res.json();
 
   document.getElementById("movies").innerHTML =
     data.map(m => `
-      <div class="card">
-        <img src="${m.poster}" />
-        <h4>${m.title}</h4>
-        <p>${m.releaseDate}</p>
-      </div>
-    `).join("");
-}
-
-// Search
-async function searchMovie() {
-  const q = document.getElementById("search").value;
-  const res = await fetch(API + "/search?q=" + q);
-  const data = await res.json();
-
-  document.getElementById("movies").innerHTML =
-    data.map(m => `
-      <div class="card">
-        <img src="${m.poster}" />
+      <div class="card" onclick="openMovie('${m._id}')">
+        <img src="${m.poster}">
         <h4>${m.title}</h4>
       </div>
     `).join("");
 }
 
+function openMovie(id) {
+  window.location.href = "/movie/" + id;
+}
+
+loadTrending();
 loadMovies();
 </script>
 
